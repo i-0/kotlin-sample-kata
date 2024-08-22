@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    testImplementation("net.wuerl.kotlin:assertj-core-kotlin:0.2.1")
 }
 
 tasks.test {
