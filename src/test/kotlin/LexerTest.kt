@@ -4,6 +4,7 @@ import ArgumentTokens.IdToken
 import ArgumentTypes.Flag
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import kotlin.text.toIntOrNull
 
 class LexerTest {
     @Test
@@ -69,13 +70,18 @@ class LexerTest {
 fun lexArgs(args: Array<String>): List<ArgumentTokens> =
     args.map { argument: String ->
         when {
-            argument.toIntOrNull() != null -> IdToken(argument)
-            argument.startsWith("--") -> FlagToken(argument.removePrefix("--"))
-            argument matches "-\\w".toRegex() -> FlagToken(argument.removePrefix("-"))
-            argument.startsWith("-") -> FlagGroup(argument.removePrefix("-").map { FlagToken("$it") })
+            argument.isInteger() -> IdToken(argument)
+            argument.isFullyQualifiedFlag() -> FlagToken(argument.removePrefix("--"))
+            argument.isFlag() -> FlagToken(argument.removePrefix("-"))
+            argument.isFlagGroup() -> FlagGroup(argument.removePrefix("-").map { FlagToken("$it") })
             else -> IdToken(argument)
         }
     }
+
+private fun String.isInteger() = this.toIntOrNull() != null
+private fun String.isFullyQualifiedFlag() = this.startsWith("--")
+private fun String.isFlag() = this matches "-\\w".toRegex()
+private fun String.isFlagGroup() = this.startsWith("-")
 
 sealed interface ArgumentTokens {
     data class FlagToken(
