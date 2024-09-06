@@ -1,13 +1,11 @@
-import ArgumentTokens.FlagGroup
-import ArgumentTokens.FlagToken
-import ArgumentTokens.IdToken
-import ArgumentTypes.Flag
-import ArgumentTypes.Option
-import ArgumentTypes.PositionalArgument
 import io.kotest.matchers.shouldBe
+import org.i0.kata.ArgumentTypes.Flag
+import org.i0.kata.ArgumentTypes.Option
+import org.i0.kata.ArgumentTypes.PositionalArgument
+import org.i0.kata.parseArgs
 import org.junit.jupiter.api.Test
 
-class MainTest {
+class ArgParserTest {
     // foo-bar -f -l 1 hello
     // l to 1, hello to null
     @Test
@@ -78,13 +76,13 @@ class MainTest {
     @Test
     fun `parse -9  as option`() {
         val args = arrayOf("--pid", "-9")
-        parseArgs(args) shouldBe listOf(Option("pid","-9"))
+        parseArgs(args) shouldBe listOf(Option("pid", "-9"))
     }
 
     @Test
     fun `parse -987  as option`() {
         val args = arrayOf("--pid", "-987")
-        parseArgs(args) shouldBe listOf(Option("pid","-987"))
+        parseArgs(args) shouldBe listOf(Option("pid", "-987"))
     }
 
     @Test
@@ -92,40 +90,4 @@ class MainTest {
         val args = arrayOf("--flag1", "--987")
         parseArgs(args) shouldBe listOf(Flag("flag1"), Flag("987"))
     }
-}
-
-fun parseArgs(args: Array<String>): List<ArgumentTypes> = parseToken(lexArgs(args))
-
-private fun parseToken(tokens: List<ArgumentTokens>): List<ArgumentTypes> {
-    if (tokens.isEmpty()) return emptyList()
-
-    return when (val first = tokens.first()) {
-        is FlagGroup -> first.toFlags() + parseToken(tokens.drop(1))
-        is IdToken -> listOf(PositionalArgument(first.value)) + parseToken(tokens.drop(1))
-        is FlagToken -> parseFlagToken(tokens, first).let { (arg, rest) -> listOf(arg) + parseToken(rest) }
-    }
-}
-
-private fun parseFlagToken(
-    tokens: List<ArgumentTokens>,
-    first: FlagToken,
-): Pair<ArgumentTypes, List<ArgumentTokens>> =
-    when (val second = tokens.getOrNull(1)) {
-        is IdToken -> Option(first.flag, second.value) to tokens.drop(2)
-        else -> Flag(first.flag) to tokens.drop(1)
-    }
-
-sealed interface ArgumentTypes {
-    data class Flag(
-        val name: String,
-    ) : ArgumentTypes
-
-    data class Option(
-        val name: String,
-        val value: String,
-    ) : ArgumentTypes
-
-    data class PositionalArgument(
-        val value: String,
-    ) : ArgumentTypes
 }
