@@ -2,6 +2,7 @@ import io.kotest.matchers.shouldBe
 import org.i0.kata.ArgumentTypes.Flag
 import org.i0.kata.ArgumentTypes.Option
 import org.i0.kata.ArgumentTypes.PositionalArgument
+import org.i0.kata.Schema
 import org.i0.kata.parseArgs
 import org.junit.jupiter.api.Test
 
@@ -52,14 +53,16 @@ class ArgParserTest {
 
     @Test
     fun `parse single option`() {
+        val schema = Schema(options = setOf("option"))
         val args = arrayOf("--option", "ovalue")
-        parseArgs(args) shouldBe listOf(Option("option", "ovalue"))
+        parseArgs(args, schema) shouldBe listOf(Option("option", "ovalue"))
     }
 
     @Test
     fun `positional arguments`() {
+        val schema = Schema(options = setOf("option1"))
         val args = arrayOf("--option1", "o1", "posArg1", "posArg2")
-        parseArgs(args) shouldBe
+        parseArgs(args, schema) shouldBe
             listOf(
                 Option("option1", "o1"),
                 PositionalArgument("posArg1"),
@@ -75,14 +78,16 @@ class ArgParserTest {
 
     @Test
     fun `parse -9  as option`() {
+        val schema = Schema(options = setOf("pid"))
         val args = arrayOf("--pid", "-9")
-        parseArgs(args) shouldBe listOf(Option("pid", "-9"))
+        parseArgs(args, schema) shouldBe listOf(Option("pid", "-9"))
     }
 
     @Test
     fun `parse -987  as option`() {
+        val schema = Schema(options = setOf("pid"))
         val args = arrayOf("--pid", "-987")
-        parseArgs(args) shouldBe listOf(Option("pid", "-987"))
+        parseArgs(args, schema) shouldBe listOf(Option("pid", "-987"))
     }
 
     @Test

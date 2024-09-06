@@ -1,9 +1,8 @@
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
-import org.i0.kata.ArgumentTypes.Flag
-import org.i0.kata.ArgumentTypes.Option
-import org.i0.kata.ArgumentTypes.PositionalArgument
-import org.i0.kata.parseArgs
+import org.i0.kata.Schema
+import org.i0.kata.ParsedSchema
+import org.i0.kata.parseSchema
 import kotlin.test.Test
 
 class SchemaTest {
@@ -45,12 +44,12 @@ class SchemaTest {
 
     @Test
     fun `an unset option is parsed to null`() {
-        val schema = Schema(options = setOf("o"))
+        val schema = Schema(options = setOf("o", "p"))
 
         parseSchema(schema, arrayOf("-p", "someValue")) shouldBe
             ParsedSchema(
                 flags = emptyMap(),
-                options = mapOf("o" to null),
+                options = mapOf("o" to null, "p" to "someValue"),
                 positionalArguments = emptyList(),
             )
     }
@@ -110,39 +109,3 @@ class SchemaTest {
             )
     }
 }
-
-fun parseSchema(
-    schema: Schema,
-    args: Array<String>,
-): ParsedSchema {
-    val arguments = parseArgs(args)
-    val parsedArguments =
-        ParsedSchema(
-            flags = arguments.filterIsInstance<Flag>().associate { it.name to true },
-            options = arguments.filterIsInstance<Option>().associate { it.name to it.value },
-            positionalArguments = arguments.filterIsInstance<PositionalArgument>().map { it.value },
-        )
-
-    return ParsedSchema(
-        flags = schema.flags.associateWith { parsedArguments.flags.getOrDefault(it, false) },
-        options = schema.options.associateWith { parsedArguments.options[it] },
-        positionalArguments =
-            parsedArguments.positionalArguments.also {
-                if (it.size != schema.positionalArgument) {
-                    throw IllegalArgumentException("Expected ${schema.positionalArgument} positional arguments, got ${it.size}")
-                }
-            },
-    )
-}
-
-data class Schema(
-    val flags: Set<String> = emptySet(),
-    val options: Set<String> = emptySet(),
-    val positionalArgument: Int = 0,
-)
-
-data class ParsedSchema(
-    val flags: Map<String, Boolean>,
-    val options: Map<String, String?>,
-    val positionalArguments: List<String>,
-)
