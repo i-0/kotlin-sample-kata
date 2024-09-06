@@ -68,6 +68,18 @@ class MainTest {
                 PositionalArgument("posArg2"),
             )
     }
+
+    @Test
+    fun `parse -9  as positional arg `() {
+        val args = arrayOf("-9")
+        parseArgs(args) shouldBe listOf(PositionalArgument("-9"))
+    }
+
+    @Test
+    fun `parse -9  as option`() {
+        val args = arrayOf("--pid", "-9")
+        parseArgs(args) shouldBe listOf(Option("pid","-9"))
+    }
 }
 
 fun parseArgs(args: Array<String>): List<ArgumentTypes> = parseToken(lexArgs(args))
