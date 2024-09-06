@@ -24,14 +24,16 @@ fun parseSchema(
             positionalArguments = arguments.filterIsInstance<ArgumentTypes.PositionalArgument>().map { it.value },
         )
 
+    require(schema.flags.containsAll(parsedArguments.flags.keys)) {
+        "Parsed arguments contain unsupported flags ${parsedArguments.flags.keys - schema.flags}"
+    }
+    require(parsedArguments.positionalArguments.size == schema.positionalArgument) {
+        "Expected ${schema.positionalArgument} positional arguments, got ${parsedArguments.positionalArguments.size}"
+    }
+
     return ParsedSchema(
         flags = schema.flags.associateWith { parsedArguments.flags.getOrDefault(it, false) },
         options = schema.options.associateWith { parsedArguments.options[it] },
-        positionalArguments =
-        parsedArguments.positionalArguments.also {
-            if (it.size != schema.positionalArgument) {
-                throw IllegalArgumentException("Expected ${schema.positionalArgument} positional arguments, got ${it.size}")
-            }
-        },
+        positionalArguments = parsedArguments.positionalArguments
     )
 }

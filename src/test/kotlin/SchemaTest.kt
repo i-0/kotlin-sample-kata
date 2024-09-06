@@ -20,11 +20,11 @@ class SchemaTest {
 
     @Test
     fun `an unset flag is parsed`() {
-        val schema = Schema(flags = setOf("f"))
+        val schema = Schema(flags = setOf("f", "g"))
 
         parseSchema(schema, arrayOf("-g")) shouldBe
             ParsedSchema(
-                flags = mapOf("f" to false),
+                flags = mapOf("f" to false, "g" to true),
                 options = emptyMap(),
                 positionalArguments = emptyList(),
             )
@@ -107,5 +107,19 @@ class SchemaTest {
                 options = emptyMap(),
                 positionalArguments = listOf("posArg"),
             )
+    }
+
+    @Test
+    fun `an unexpected flag leads to exception`() {
+        shouldThrow<IllegalArgumentException> {
+            parseSchema(Schema(), arrayOf("-g"))
+        }
+    }
+
+    @Test
+    fun `an unexpected option leads to exception but with flag`() {
+        shouldThrow<IllegalArgumentException> {
+            parseSchema(Schema(), arrayOf("-g", "10"))
+        }.message shouldBe "Parsed arguments contain unsupported flags [g]"
     }
 }
