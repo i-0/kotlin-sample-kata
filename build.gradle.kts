@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.0.0"
+    alias(libs.plugins.kotlin.jvm)
 }
 
 group = "org.i0.kata"
@@ -11,7 +11,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-    testImplementation("net.wuerl.kotlin:assertj-core-kotlin:0.2.1")
+    testImplementation(libs.bundles.kotest.selected)
 }
 
 tasks.test {

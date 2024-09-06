@@ -1,0 +1,14 @@
+[versions]
+kotest-version="5.9.1"
+kotlin-version="2.0.20"
+
+[libraries]
+kotest-assertions-api = { module = "io.kotest:kotest-assertions-api-jvm", version.ref = "kotest-version"}
+kotest-assertions = { module = "io.kotest:kotest-assertions-shared-jvm", version.ref = "kotest-version"}
+kotest-core = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest-version"}
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
+
+[bundles]
+kotest-selected = ["kotest-assertions", "kotest-assertions-api", "kotest-core"]
