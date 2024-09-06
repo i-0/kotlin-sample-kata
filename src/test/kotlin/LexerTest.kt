@@ -69,6 +69,7 @@ class LexerTest {
 fun lexArgs(args: Array<String>): List<ArgumentTokens> =
     args.map { argument: String ->
         when {
+            argument.toIntOrNull() != null -> IdToken(argument)
             argument.startsWith("--") -> FlagToken(argument.removePrefix("--"))
             argument matches "-\\w".toRegex() -> FlagToken(argument.removePrefix("-"))
             argument.startsWith("-") -> FlagGroup(argument.removePrefix("-").map { FlagToken("$it") })

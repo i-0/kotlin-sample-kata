@@ -86,6 +86,12 @@ class MainTest {
         val args = arrayOf("--pid", "-987")
         parseArgs(args) shouldBe listOf(Option("pid","-987"))
     }
+
+    @Test
+    fun `parse --987 as a flag with full-qualified name 987`() {
+        val args = arrayOf("--flag1", "--987")
+        parseArgs(args) shouldBe listOf(Flag("flag1"), Flag("987"))
+    }
 }
 
 fun parseArgs(args: Array<String>): List<ArgumentTypes> = parseToken(lexArgs(args))
